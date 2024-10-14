@@ -1,0 +1,30 @@
+openapi: 3.0.0
+info:
+  title: Pia AI API - Common Components
+  version: 2.0.0
+  description: Common components shared across the entire Pia AI API
+
+components:
+  securitySchemes:
+    BearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+      description: 'Authorization header with API key. Format: "Bearer YOUR_API_KEY"'
+
+  schemas:
+    ErrorResponse:
+      type: object
+      properties:
+        error:
+          type: string
+        message:
+          type: string
+
+  responses:
+    UnauthorizedError:
+      description: Authentication failed
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'

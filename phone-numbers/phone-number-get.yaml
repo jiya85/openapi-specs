@@ -1,0 +1,50 @@
+openapi: 3.0.0
+info:
+  title: Pia AI API
+  version: 1.0.0
+  description: API for fetching phone number information
+
+servers:
+  - url: https://api.piaai.com
+
+paths:
+  /phone_numbers/{id}:
+    get:
+      summary: Fetch Phone Number Details
+      description: Retrieve comprehensive information about a specific phone number.
+      tags:
+        - Phone Numbers
+      security:
+        - BearerAuth: []
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+          description: The unique identifier of the phone number you want to fetch
+      responses:
+        '200':
+          description: Successful retrieval of phone number details
+          content:
+            application/json:
+              schema:
+                oneOf:
+                  - $ref: './phone-number-common-openapi.yaml#/components/schemas/ByoPhoneNumber'
+                  - $ref: './phone-number-common-openapi.yaml#/components/schemas/TwilioPhoneNumber'
+                  - $ref: './phone-number-common-openapi.yaml#/components/schemas/PiaPhoneNumber'
+                discriminator:
+                  propertyName: provider
+                  mapping:
+                    byo-phone-number: '#/components/schemas/ByoPhoneNumber'
+                    twilio: '#/components/schemas/TwilioPhoneNumber'
+                    pia: '#/components/schemas/PiaPhoneNumber'
+
+components:
+  securitySchemes:
+    BearerAuth:
+      $ref: '../common-openapi.yaml#/components/securitySchemes/BearerAuth'
+
+tags:
+  - name: Phone Numbers
+    description: Operations related to phone number management

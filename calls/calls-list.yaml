@@ -1,0 +1,88 @@
+openapi: 3.0.0
+info:
+  title: Pia AI Call List API
+  version: 2.0.0
+  description: Retrieve call records based on specified filters and criteria.
+
+servers:
+  - url: https://api.piaai.com/v2
+
+paths:
+  /calls:
+    get:
+      summary: List Calls
+      description: Retrieve a list of call records matching the provided criteria.
+      security:
+        - BearerAuth: []
+      parameters:
+        - in: query
+          name: ai_agent_ids
+          schema:
+            type: array
+            items:
+              type: string
+          description: List of AI agent IDs to filter by
+        - in: query
+          name: start_time_before
+          schema:
+            type: string
+            format: date-time
+          description: Upper bound for call start time (ISO 8601 format)
+        - in: query
+          name: start_time_after
+          schema:
+            type: string
+            format: date-time
+          description: Lower bound for call start time (ISO 8601 format)
+        - in: query
+          name: end_time_before
+          schema:
+            type: string
+            format: date-time
+          description: Upper bound for call end time (ISO 8601 format)
+        - in: query
+          name: end_time_after
+          schema:
+            type: string
+            format: date-time
+          description: Lower bound for call end time (ISO 8601 format)
+        - in: query
+          name: sort_direction
+          schema:
+            type: string
+            enum: [asc, desc]
+            default: desc
+          description: Direction to sort the results by timestamp
+        - in: query
+          name: page_size
+          schema:
+            type: integer
+            default: 100
+          description: Number of results to return per page
+        - in: query
+          name: page_token
+          schema:
+            type: string
+          description: Token for retrieving the next page of results
+      responses:
+        '200':
+          description: Successfully retrieved call list
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  calls:
+                    type: array
+                    items:
+                      oneOf:
+                        - $ref: 'calls-common-openapi.yaml#/components/schemas/WebCallResponse'
+                        - $ref: 'calls-common-openapi.yaml#/components/schemas/PhoneCallResponse'
+                  next_page_token:
+                    type: string
+                    description: Token for retrieving the next page of results
+
+components:
+  securitySchemes:
+    BearerAuth:
+      $ref: '../common-openapi.yaml#/components/securitySchemes/BearerAuth'

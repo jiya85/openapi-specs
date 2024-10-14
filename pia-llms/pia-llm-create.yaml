@@ -1,0 +1,46 @@
+openapi: 3.0.0
+info:
+  title: Pia AI API - LLM Management
+  version: 1.0.0
+  description: API for creating and managing PIA LLMs
+
+servers:
+  - url: https://api.piaai.com
+
+paths:
+  /llms:
+    post:
+      summary: Create New LLM
+      description: Create a new PIA LLM
+      tags:
+        - LLMs
+      security:
+        - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreatePiaLLMDTO'
+      responses:
+        '201':
+          description: Successfully created LLM
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PiaLLM'
+
+components:
+  securitySchemes:
+    BearerAuth:
+      $ref: '../common-openapi.yaml#/components/securitySchemes/BearerAuth'
+
+  schemas:
+    CreatePiaLLMDTO:
+      $ref: './pia-llm-common-openapi.yaml#/components/schemas/CreatePiaLLMDTO'
+    PiaLLM:
+      $ref: './pia-llm-common-openapi.yaml#/components/schemas/PiaLLM'
+
+tags:
+  - name: LLMs
+    description: Operations related to PIA LLM management

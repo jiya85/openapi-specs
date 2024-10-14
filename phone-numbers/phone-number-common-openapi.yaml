@@ -1,0 +1,153 @@
+openapi: 3.0.0
+info:
+  title: Pia AI API - Phone Number Common Components
+  version: 1.0.0
+  description: Common components shared across phone number APIs
+
+components:
+  schemas:
+    CreateByoPhoneNumberDTO:
+      type: object
+      properties:
+        provider:
+          type: string
+          enum: [byo-phone-number]
+        phone_number:
+          type: string
+          description: The phone number provided by the user
+        ai_agent_id:
+          type: string
+          description: ID of the AI agent to link with this phone number
+      required:
+        - provider
+        - phone_number
+        - ai_agent_id
+
+    CreateTwilioPhoneNumberDTO:
+      type: object
+      properties:
+        provider:
+          type: string
+          enum: [twilio]
+        account_sid:
+          type: string
+          description: Twilio Account SID
+        auth_token:
+          type: string
+          description: Twilio Auth Token
+        phone_number:
+          type: string
+          description: The Twilio phone number to link
+        ai_agent_id:
+          type: string
+          description: ID of the AI agent to link with this phone number
+      required:
+        - provider
+        - account_sid
+        - auth_token
+        - phone_number
+        - ai_agent_id
+
+    CreatePiaPhoneNumberDTO:
+      type: object
+      properties:
+        provider:
+          type: string
+          enum: [pia]
+        area_code:
+          type: string
+          description: Desired area code for the new phone number
+        ai_agent_id:
+          type: string
+          description: ID of the AI agent to link with this phone number
+      required:
+        - provider
+        - area_code
+        - ai_agent_id
+
+    ByoPhoneNumber:
+      type: object
+      properties:
+        id:
+          type: string
+          description: Unique identifier for the BYO phone number
+        provider:
+          type: string
+          enum: [byo-phone-number]
+        phone_number:
+          type: string
+          description: The user's own phone number
+        ai_agent_id:
+          type: string
+          description: ID of the linked AI agent
+        created_at:
+          type: string
+          format: date-time
+          description: Timestamp when the phone number was created
+      required:
+        - id
+        - provider
+        - phone_number
+        - ai_agent_id
+        - created_at
+
+    TwilioPhoneNumber:
+      type: object
+      properties:
+        id:
+          type: string
+          description: Unique identifier for the Twilio phone number
+        provider:
+          type: string
+          enum: [twilio]
+        phone_number:
+          type: string
+          description: The phone number assigned by Twilio
+        ai_agent_id:
+          type: string
+          description: ID of the linked AI agent
+        created_at:
+          type: string
+          format: date-time
+          description: Timestamp when the phone number was created
+      required:
+        - id
+        - provider
+        - phone_number
+        - ai_agent_id
+        - created_at
+
+    PiaPhoneNumber:
+      type: object
+      properties:
+        id:
+          type: string
+          description: Unique identifier for the Pia phone number
+        provider:
+          type: string
+          enum: [pia]
+        phone_number:
+          type: string
+          description: The phone number assigned by Pia
+        ai_agent_id:
+          type: string
+          description: ID of the linked AI agent
+        created_at:
+          type: string
+          format: date-time
+          description: Timestamp when the phone number was created
+      required:
+        - id
+        - provider
+        - phone_number
+        - ai_agent_id
+        - created_at
+
+    UpdatePhoneNumberDTO:
+      type: object
+      properties:
+        ai_agent_id:
+          type: string
+          description: ID of the AI agent to link with this phone number
+      required:
+        - ai_agent_id

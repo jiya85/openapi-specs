@@ -1,0 +1,68 @@
+openapi: 3.0.0
+info:
+  title: Pia AI API - LLM Management
+  version: 1.0.0
+  description: API for updating PIA LLMs
+
+servers:
+  - url: https://api.piaai.com
+
+paths:
+  /llms/{llm_id}:
+    put:
+      summary: Update LLM
+      description: Update an existing PIA LLM
+      tags:
+        - LLMs
+      security:
+        - BearerAuth: []
+      parameters:
+        - in: path
+          name: llm_id
+          required: true
+          schema:
+            type: string
+            format: uuid
+          description: The unique identifier of the LLM to update
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdatePiaLLMDTO'
+      responses:
+        '200':
+          description: Successfully updated LLM
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PiaLLM'
+        '404':
+          description: LLM not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '400':
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+components:
+  securitySchemes:
+    BearerAuth:
+      $ref: '../common-openapi.yaml#/components/securitySchemes/BearerAuth'
+
+  schemas:
+    UpdatePiaLLMDTO:
+      $ref: './pia-llm-common-openapi.yaml#/components/schemas/UpdatePiaLLMDTO'
+    PiaLLM:
+      $ref: './pia-llm-common-openapi.yaml#/components/schemas/PiaLLM'
+    ErrorResponse:
+      $ref: '../common-openapi.yaml#/components/schemas/ErrorResponse'
+
+tags:
+  - name: LLMs
+    description: Operations related to PIA LLM management

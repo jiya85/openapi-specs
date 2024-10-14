@@ -1,0 +1,56 @@
+openapi: 3.0.0
+info:
+  title: Pia AI API
+  version: 1.0.0
+  description: API for updating phone number information
+
+servers:
+  - url: https://api.piaai.com
+
+paths:
+  /phone_numbers/{id}:
+    patch:
+      summary: Update Phone Number
+      description: Update the configuration of an existing phone number
+      tags:
+        - Phone Numbers
+      security:
+        - BearerAuth: []
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+          description: The unique identifier of the phone number you want to update
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: './phone-number-common-openapi.yaml#/components/schemas/UpdatePhoneNumberDTO'
+      responses:
+        '200':
+          description: Successfully updated phone number
+          content:
+            application/json:
+              schema:
+                oneOf:
+                  - $ref: './phone-number-common-openapi.yaml#/components/schemas/ByoPhoneNumber'
+                  - $ref: './phone-number-common-openapi.yaml#/components/schemas/TwilioPhoneNumber'
+                  - $ref: './phone-number-common-openapi.yaml#/components/schemas/PiaPhoneNumber'
+                discriminator:
+                  propertyName: provider
+                  mapping:
+                    byo-phone-number: '#/components/schemas/ByoPhoneNumber'
+                    twilio: '#/components/schemas/TwilioPhoneNumber'
+                    pia: '#/components/schemas/PiaPhoneNumber'
+
+components:
+  securitySchemes:
+    BearerAuth:
+      $ref: '../common-openapi.yaml#/components/securitySchemes/BearerAuth'
+
+tags:
+  - name: Phone Numbers
+    description: Operations related to phone number management

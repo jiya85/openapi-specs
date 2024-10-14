@@ -1,0 +1,254 @@
+openapi: 3.0.0
+info:
+  title: Pia AI API - Calls Common Components
+  version: 2.0.0
+  description: Common components for call-related endpoints
+
+components:
+  schemas:
+    WebCallResponse:
+      type: object
+      properties:
+        call_type:
+          type: string
+          enum: [web_call]
+          description: Indicates this is a web call.
+        access_token:
+          type: string
+          description: Token for accessing the call.
+        call_id:
+          type: string
+          description: Unique identifier for the call.
+        ai_agent_id:
+          type: string
+          description: Identifier of the AI agent handling the call.
+        call_status:
+          type: string
+          enum: [ongoing, ended, error]
+          description: Current status of the call.
+        metadata:
+          type: object
+          additionalProperties: true
+          description: Additional data associated with the call. It can be any arbitrary key value pairs. The keys and values must be strings. This doesn't have any effect on handling the call.
+          example:
+            campaign: "newcomer"
+            customer_segment: "ecommerce"
+        pia_llm_dynamic_data:
+          type: object
+          additionalProperties: true
+          description: Dynamic data that was used to populate the variables mentioned in the prompts while creating the Pia LLM.
+          example:
+            caller_name: "John"
+            caller_address: "81 street, Times Square, Mars."
+        call_start_time:
+          type: string
+          format: date-time
+          description: Start time of the call in ISO 8601 format, UTC+0.
+          example: "2023-04-01T12:00:00Z"
+        call_end_time:
+          type: string
+          format: date-time
+          description: End time of the call in ISO 8601 format, UTC+0.
+          example: "2023-04-01T12:00:00Z"
+        transcripts:
+          type: array
+          items:
+            $ref: '#/components/schemas/TranscriptItem'
+          description: Array of transcript items from the call.
+        recorded_call_audio_url:
+          type: string
+          description: URL to access the recorded audio of the call.
+        disconnection_reason:
+          type: string
+          enum:
+            - user_ended_call
+            - agent_ended_call
+            - call_transferred
+            - inactivity_timeout
+            - maximum_duration_exceeded
+            - concurrent_call_limit_reached
+            - invalid_payment
+            - potential_scam_detected
+            - inbound_webhook_error
+            - line_busy
+            - call_failed
+            - no_answer
+            - llm_websocket_initialization_error
+            - llm_websocket_connection_lost
+            - llm_websocket_runtime_error
+            - llm_websocket_payload_corruption
+            - twilio_service_error
+            - no_audio_input
+            - speech_recognition_error
+            - pia_platform_internal_error
+            - unknown_error
+            - user_connection_failure
+          description: Specific reason for call disconnection, if applicable.
+
+    PhoneCallResponse:
+      type: object
+      properties:
+        call_type:
+          type: string
+          enum: [phone_call]
+          description: Indicates this is a phone call.
+        call_id:
+          type: string
+          description: Unique identifier for the call.
+        ai_agent_id:
+          type: string
+          description: Identifier of the AI agent handling the call.
+        call_status:
+          type: string
+          enum: [registered, ongoing, ended, error]
+          description: Current status of the call.
+        from_number:
+          type: string
+          description: Phone number that initiated the call (E.164 format).
+        to_number:
+          type: string
+          description: Phone number that received the call (E.164 format).
+        direction:
+          type: string
+          enum: [inbound, outbound]
+          description: Direction of the call (inbound or outbound).
+        metadata:
+          type: object
+          additionalProperties: true
+          description: Additional data associated with the call. It can be any arbitrary key value pairs. The keys and values must be strings. This doesn't have any effect on handling the call.
+          example:
+            campaign: "newcomer"
+            customer_segment: "ecommerce"
+        pia_llm_dynamic_data:
+          type: object
+          additionalProperties: true
+          description: Dynamic data that was used to populate the variables mentioned in the prompts while creating the Pia LLM.
+          example:
+            caller_name: "John"
+            caller_address: "81 street, Times Square, Mars."
+        call_start_time:
+          type: string
+          format: date-time
+          description: Start time of the call in ISO 8601 format, UTC+0.
+          example: "2023-04-01T12:00:00Z"
+        call_end_time:
+          type: string
+          format: date-time
+          description: End time of the call in ISO 8601 format, UTC+0.
+          example: "2023-04-01T12:00:00Z"
+        transcripts:
+          type: array
+          items:
+            $ref: '#/components/schemas/TranscriptItem'
+          description: Array of transcript items from the call.
+        recorded_call_audio_url:
+          type: string
+          description: URL to access the recorded audio of the call.
+        disconnection_reason:
+          type: string
+          enum:
+            - user_ended_call
+            - agent_ended_call
+            - call_transferred
+            - voicemail_detected
+            - inactivity_timeout
+            - answering_machine_detected
+            - maximum_duration_exceeded
+            - concurrent_call_limit_reached
+            - invalid_payment
+            - potential_scam_detected
+            - inbound_webhook_error
+            - line_busy
+            - call_failed
+            - no_answer
+            - llm_websocket_initialization_error
+            - llm_websocket_connection_lost
+            - llm_websocket_runtime_error
+            - llm_websocket_payload_corruption
+            - frontend_payload_corruption
+            - twilio_service_error
+            - no_audio_input
+            - speech_recognition_error
+            - retell_service_error
+            - unknown_error
+            - user_connection_failure
+            - registered_call_timed_out
+          description: Specific reason for call disconnection, if applicable.
+
+    TranscriptItem:
+      type: object
+      properties:
+        role:
+          type: string
+          enum: [agent, user]
+          description: Indicates whether the speaker is the agent or the user.
+        content:
+          type: string
+          description: Transcribed content of the speech.
+        words:
+          type: array
+          items:
+            type: object
+            properties:
+              word:
+                type: string
+                description: Individual transcribed word.
+              start:
+                type: number
+                description: Start time of the word in seconds.
+              end:
+                type: number
+                description: End time of the word in seconds.
+
+    CreatePhoneCallRequest:
+      type: object
+      required:
+        - from_number
+        - to_number
+      properties:
+        from_number:
+          type: string
+          description: The caller's phone number in E.164 format, which must be owned by the user.
+        to_number:
+          type: string
+          description: The recipient's phone number in E.164 format. Currently, only US numbers are supported.
+        override_ai_agent_id:
+          type: string
+          description: An optional identifier for a specific AI agent to handle this call, overriding the default agent.
+        metadata:
+          type: object
+          additionalProperties: true
+          description: Additional data associated with the call. It can be any arbitrary key value pairs. The keys and values must be strings. This doesn't have any effect on handling the call.
+          example:
+            campaign: "newcomer"
+            customer_segment: "ecommerce"
+        pia_llm_dynamic_data:
+          type: object
+          additionalProperties: true
+          description: Dynamic data that will be used to populate the variables mentioned in the prompts while creating the Pia LLM. The call will fail if not all variables used in Pia LLM prompts are present here.
+          example:
+            caller_name: "John"
+            caller_address: "81 street, Times Square, Mars."
+
+    CreateWebCallRequest:
+      type: object
+      required:
+        - ai_agent_id
+      properties:
+        ai_agent_id:
+          type: string
+          description: Unique identifier for the AI agent handling the call.
+        metadata:
+          type: object
+          additionalProperties: true
+          description: Additional data associated with the call. It can be any arbitrary key-value pairs. The keys and values must be strings. This doesn't have any effect on handling the call.
+          example:
+            campaign: "newcomer"
+            customer_segment: "ecommerce"
+        pia_llm_dynamic_data:
+          type: object
+          additionalProperties: true
+          description: Dynamic data that will be used to populate the variables mentioned in the prompts while creating the Pia LLM. The call will fail if not all variables used in Pia LLM prompts are present here.
+          example:
+            caller_name: "John"
+            caller_address: "81 street, Times Square, Mars."

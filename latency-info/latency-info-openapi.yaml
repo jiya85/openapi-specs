@@ -1,0 +1,63 @@
+openapi: 3.0.0
+info:
+  title: Pia AI API - Latency Information
+  version: 2.0.0
+  description: API for accessing call latency information
+
+paths:
+  /calls/{call_id}/latency_info:
+    get:
+      summary: Retrieve Call Latency Information
+      description: Retrieve detailed latency information about a specific call.
+      parameters:
+        - in: path
+          name: call_id
+          required: true
+          schema:
+            type: string
+          description: ID of the call to access latency information for.
+        - in: header
+          name: Authorization
+          required: true
+          schema:
+            type: string
+          description: 'Authorization header with API key. Format: "Bearer YOUR_API_KEY"'
+      responses:
+        '200':
+          description: Successful latency data retrieval
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/LatencyInfo'
+
+components:
+  schemas:
+    LatencyInfo:
+      type: object
+      properties:
+        call_id:
+          type: string
+        e2e_latency:
+          $ref: '#/components/schemas/LatencyObject'
+        llm_latency:
+          $ref: '#/components/schemas/LatencyObject'
+        llm_websocket_network_rtt_latency:
+          $ref: '#/components/schemas/LatencyObject'
+
+    LatencyObject:
+      type: object
+      properties:
+        p50:
+          type: number
+        p90:
+          type: number
+        p95:
+          type: number
+        p99:
+          type: number
+        max:
+          type: number
+        min:
+          type: number
+        num:
+          type: number

@@ -1,0 +1,51 @@
+openapi: 3.0.0
+info:
+  title: Pia AI API
+  version: 2.0.0
+  description: API for accessing call information
+
+paths:
+  /calls/{call_id}:
+    get:
+      summary: Retrieve Call Details
+      description: Retrieve detailed information about a specific call.
+      tags:
+        - Calls
+      parameters:
+        - in: path
+          name: call_id
+          required: true
+          schema:
+            type: string
+          description: Unique identifier for the call.
+        - in: header
+          name: Authorization
+          required: true
+          schema:
+            type: string
+          description: 'Authorization header with API key. Format: "Bearer YOUR_API_KEY"'
+      responses:
+        '200':
+          description: Successful data retrieval
+          content:
+            application/json:
+              schema:
+                oneOf:
+                  - $ref: 'calls-common-openapi.yaml#/components/schemas/WebCallResponse'
+                  - $ref: 'calls-common-openapi.yaml#/components/schemas/PhoneCallResponse'
+                discriminator:
+                  propertyName: call_type
+                  mapping:
+                    web_call: '#/components/schemas/WebCallResponse'
+                    phone_call: '#/components/schemas/PhoneCallResponse'
+
+components:
+  schemas:
+    WebCallResponse:
+      $ref: 'calls-common-openapi.yaml#/components/schemas/WebCallResponse'
+    
+    PhoneCallResponse:
+      $ref: 'calls-common-openapi.yaml#/components/schemas/PhoneCallResponse'
+    
+    TranscriptItem:
+      $ref: 'calls-common-openapi.yaml#/components/schemas/TranscriptItem'

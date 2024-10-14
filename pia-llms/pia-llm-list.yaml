@@ -1,0 +1,77 @@
+openapi: 3.0.0
+info:
+  title: Pia AI API - LLM Management
+  version: 1.0.0
+  description: API for listing PIA LLMs
+
+servers:
+  - url: https://api.piaai.com
+
+paths:
+  /llms:
+    get:
+      summary: List LLMs
+      description: Retrieve a list of PIA LLMs
+      tags:
+        - LLMs
+      security:
+        - BearerAuth: []
+      parameters:
+        - in: query
+          name: page_size
+          schema:
+            type: integer
+            minimum: 1
+            maximum: 100
+            default: 20
+          description: Number of results to return per page
+        - in: query
+          name: page_token
+          schema:
+            type: string
+          description: Token for retrieving the next page of results
+        - in: query
+          name: sort_direction
+          schema:
+            type: string
+            enum: [asc, desc]
+            default: desc
+          description: Direction to sort the results by timestamp
+      responses:
+        '200':
+          description: Successfully retrieved LLMs
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  llms:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/PiaLLM'
+                  next_page_token:
+                    type: string
+                    description: Token for retrieving the next page of results
+                  pagination_info:
+                    $ref: './pia-llm-common-openapi.yaml#/components/schemas/PaginationInfo'
+        '400':
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+components:
+  securitySchemes:
+    BearerAuth:
+      $ref: '../common-openapi.yaml#/components/securitySchemes/BearerAuth'
+
+  schemas:
+    PiaLLM:
+      $ref: './pia-llm-common-openapi.yaml#/components/schemas/PiaLLM'
+    ErrorResponse:
+      $ref: '../common-openapi.yaml#/components/schemas/ErrorResponse'
+
+tags:
+  - name: LLMs
+    description: Operations related to PIA LLM management

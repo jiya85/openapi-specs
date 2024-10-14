@@ -1,0 +1,58 @@
+openapi: 3.0.0
+info:
+  title: Pia AI API
+  version: 1.0.0
+  description: API for setting up a new phone number and connecting it to AI agents
+
+servers:
+  - url: https://api.piaai.com
+
+paths:
+  /phone_numbers:
+    post:
+      summary: Create New Phone Number
+      description: Acquire a new phone number and link it to AI agents for handling calls
+      tags:
+        - Phone Numbers
+      security:
+        - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              oneOf:
+                - $ref: './phone-number-common-openapi.yaml#/components/schemas/CreateByoPhoneNumberDTO'
+                - $ref: './phone-number-common-openapi.yaml#/components/schemas/CreateTwilioPhoneNumberDTO'
+                - $ref: './phone-number-common-openapi.yaml#/components/schemas/CreatePiaPhoneNumberDTO'
+              discriminator:
+                propertyName: provider
+                mapping:
+                  byo-phone-number: '#/components/schemas/CreateByoPhoneNumberDTO'
+                  twilio: '#/components/schemas/CreateTwilioPhoneNumberDTO'
+                  pia: '#/components/schemas/CreatePiaPhoneNumberDTO'
+      responses:
+        '201':
+          description: Successfully created phone number
+          content:
+            application/json:
+              schema:
+                oneOf:
+                  - $ref: './phone-number-common-openapi.yaml#/components/schemas/ByoPhoneNumber'
+                  - $ref: './phone-number-common-openapi.yaml#/components/schemas/TwilioPhoneNumber'
+                  - $ref: './phone-number-common-openapi.yaml#/components/schemas/PiaPhoneNumber'
+                discriminator:
+                  propertyName: provider
+                  mapping:
+                    byo-phone-number: '#/components/schemas/ByoPhoneNumber'
+                    twilio: '#/components/schemas/TwilioPhoneNumber'
+                    pia: '#/components/schemas/PiaPhoneNumber'
+
+components:
+  securitySchemes:
+    BearerAuth:
+      $ref: '../common-openapi.yaml#/components/securitySchemes/BearerAuth'
+
+tags:
+  - name: Phone Numbers
+    description: Operations related to phone number management

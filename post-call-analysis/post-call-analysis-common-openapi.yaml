@@ -1,0 +1,89 @@
+components:
+  schemas:
+    PostCallAnalysisResult:
+      type: object
+      properties:
+        analysis_item:
+          $ref: '#/components/schemas/PostCallAnalysisItem'
+        result:
+          oneOf:
+            - type: string
+            - type: boolean
+            - type: number
+          description: The result of the post-call analysis item, which can be a string, boolean, or number depending on the analysis item type.
+
+    PostCallAnalysisItem:
+      oneOf:
+        - $ref: '#/components/schemas/StringAnalysisItem'
+        - $ref: '#/components/schemas/EnumAnalysisItem'
+        - $ref: '#/components/schemas/BooleanAnalysisItem'
+        - $ref: '#/components/schemas/NumberAnalysisItem'
+
+    StringAnalysisItem:
+      type: object
+      required:
+        - type
+        - name
+        - description
+      properties:
+        type:
+          type: string
+          enum: [string]
+        name:
+          type: string
+        description:
+          type: string
+        examples:
+          type: array
+          items:
+            type: string
+
+    EnumAnalysisItem:
+      type: object
+      required:
+        - type
+        - name
+        - description
+        - choices
+      properties:
+        type:
+          type: string
+          enum: [enum]
+        name:
+          type: string
+        description:
+          type: string
+        choices:
+          type: array
+          items:
+            type: string
+
+    BooleanAnalysisItem:
+      type: object
+      required:
+        - type
+        - name
+        - description
+      properties:
+        type:
+          type: string
+          enum: [boolean]
+        name:
+          type: string
+        description:
+          type: string
+
+    NumberAnalysisItem:
+      type: object
+      required:
+        - type
+        - name
+        - description
+      properties:
+        type:
+          type: string
+          enum: [number]
+        name:
+          type: string
+        description:
+          type: string

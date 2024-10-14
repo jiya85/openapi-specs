@@ -1,0 +1,65 @@
+openapi: 3.0.0
+info:
+  title: Pia AI API
+  version: 1.0.0
+  description: API for managing Pia AI phone numbers and related services
+
+servers:
+  - url: https://api.piaai.com
+
+paths:
+  /phone_numbers:
+    get:
+      summary: List Phone Numbers
+      description: Retrieve a list of all phone numbers associated with the account.
+      tags:
+        - Phone Numbers
+      security:
+        - BearerAuth: []
+      parameters:
+        - in: query
+          name: page_size
+          schema:
+            type: integer
+            minimum: 1
+            maximum: 100
+            default: 20
+          description: Number of results to return per page
+        - in: query
+          name: page_token
+          schema:
+            type: string
+          description: Token for retrieving the next page of results
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  phone_numbers:
+                    type: array
+                    items:
+                      oneOf:
+                        - $ref: './phone-number-common-openapi.yaml#/components/schemas/ByoPhoneNumber'
+                        - $ref: './phone-number-common-openapi.yaml#/components/schemas/TwilioPhoneNumber'
+                        - $ref: './phone-number-common-openapi.yaml#/components/schemas/PiaPhoneNumber'
+                      discriminator:
+                        propertyName: provider
+                        mapping:
+                          byo-phone-number: '#/components/schemas/ByoPhoneNumber'
+                          twilio: '#/components/schemas/TwilioPhoneNumber'
+                          pia: '#/components/schemas/PiaPhoneNumber'
+                  next_page_token:
+                    type: string
+                    description: Token for retrieving the next page of results
+
+components:
+  securitySchemes:
+    BearerAuth:
+      $ref: '../common-openapi.yaml#/components/securitySchemes/BearerAuth'
+
+tags:
+  - name: Phone Numbers
+    description: Operations related to phone number management

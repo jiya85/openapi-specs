@@ -1,0 +1,196 @@
+components:
+  schemas:
+    PiaLLM:
+      type: object
+      discriminator:
+        propertyName: llm_type
+        mapping:
+          simple: '#/components/schemas/SimplePiaLLM'
+          agentic: '#/components/schemas/AgenticPiaLLM'
+          custom: '#/components/schemas/CustomPiaLLM'
+      oneOf:
+        - $ref: '#/components/schemas/SimplePiaLLM'
+        - $ref: '#/components/schemas/AgenticPiaLLM'
+        - $ref: '#/components/schemas/CustomPiaLLM'
+      properties:
+        llm_id:
+          type: string
+          format: uuid
+        organization_id:
+          type: string
+        user_id:
+          type: string
+        llm_name:
+          type: string
+        llm_type:
+          type: string
+          enum: [simple, agentic, custom]
+        model_type:
+          type: string
+        model_name:
+          type: string
+        model_temperature:
+          type: number
+          format: float
+        model_api_key:
+          type: string
+        required_dynamic_data:
+          type: array
+          description: List of strings containing the dynamic data used in the prompt of the LLM. This field is for validation purpose only.
+          items:
+            type: string
+
+    SimplePiaLLM:
+      allOf:
+        - $ref: '#/components/schemas/PiaLLM'
+        - type: object
+          properties:
+            system_prompt:
+              type: string
+              description: The system prompt for simple LLMs
+            tools:
+              type: array
+              description: Array of JSON objects representing tools for simple LLMs
+              items:
+                type: object
+
+    AgenticPiaLLM:
+      allOf:
+        - $ref: '#/components/schemas/PiaLLM'
+        - type: object
+          properties:
+            graph_data:
+              type: object
+              description: JSON object representing graph data for agentic LLMs
+
+    CustomPiaLLM:
+      allOf:
+        - $ref: '#/components/schemas/PiaLLM'
+        - type: object
+          properties:
+            custom_llm_url:
+              type: string
+              description: URL for custom LLM endpoint
+
+    CreatePiaLLMDTO:
+      type: object
+      discriminator:
+        propertyName: llm_type
+        mapping:
+          simple: '#/components/schemas/CreateSimplePiaLLMDTO'
+          agentic: '#/components/schemas/CreateAgenticPiaLLMDTO'
+          custom: '#/components/schemas/CreateCustomPiaLLMDTO'
+      oneOf:
+        - $ref: '#/components/schemas/CreateSimplePiaLLMDTO'
+        - $ref: '#/components/schemas/CreateAgenticPiaLLMDTO'
+        - $ref: '#/components/schemas/CreateCustomPiaLLMDTO'
+      required:
+        - llm_name
+        - llm_type
+        - model_type
+        - model_name
+        - model_temperature
+      properties:
+        llm_type:
+          type: string
+          enum: [simple, agentic, custom]
+
+
+    CreateSimplePiaLLMDTO:
+      allOf:
+        - $ref: '#/components/schemas/CreatePiaLLMDTO'
+        - type: object
+          properties:
+            system_prompt:
+              type: string
+              description: The system prompt for simple LLMs
+            tools:
+              type: array
+              description: Array of JSON objects representing tools for simple LLMs
+              items:
+                type: object
+          required:
+            - system_prompt
+
+    CreateAgenticPiaLLMDTO:
+      allOf:
+        - $ref: '#/components/schemas/CreatePiaLLMDTO'
+        - type: object
+          properties:
+            graph_data:
+              type: object
+              description: JSON object representing graph data for agentic LLMs
+          required:
+            - graph_data
+
+    CreateCustomPiaLLMDTO:
+      allOf:
+        - $ref: '#/components/schemas/CreatePiaLLMDTO'
+        - type: object
+          properties:
+            custom_llm_url:
+              type: string
+              description: URL for custom LLM endpoint
+          required:
+            - custom_llm_url
+
+    UpdatePiaLLMDTO:
+      type: object
+      discriminator:
+        propertyName: llm_type
+        mapping:
+          simple: '#/components/schemas/UpdateSimplePiaLLMDTO'
+          agentic: '#/components/schemas/UpdateAgenticPiaLLMDTO'
+          custom: '#/components/schemas/UpdateCustomPiaLLMDTO'
+      oneOf:
+        - $ref: '#/components/schemas/UpdateSimplePiaLLMDTO'
+        - $ref: '#/components/schemas/UpdateAgenticPiaLLMDTO'
+        - $ref: '#/components/schemas/UpdateCustomPiaLLMDTO'
+
+    UpdateSimplePiaLLMDTO:
+      allOf:
+        - $ref: '#/components/schemas/UpdatePiaLLMDTO'
+        - type: object
+          properties:
+            system_prompt:
+              type: string
+              description: The system prompt for simple LLMs
+            tools:
+              type: array
+              description: Array of JSON objects representing tools for simple LLMs
+              items:
+                type: object
+
+    UpdateAgenticPiaLLMDTO:
+      allOf:
+        - $ref: '#/components/schemas/UpdatePiaLLMDTO'
+        - type: object
+          properties:
+            graph_data:
+              type: object
+              description: JSON object representing graph data for agentic LLMs
+
+    UpdateCustomPiaLLMDTO:
+      allOf:
+        - $ref: '#/components/schemas/UpdatePiaLLMDTO'
+        - type: object
+          properties:
+            custom_llm_url:
+              type: string
+              description: URL for custom LLM endpoint
+
+    PaginationInfo:
+      type: object
+      properties:
+        total_items:
+          type: integer
+        total_pages:
+          type: integer
+        current_page:
+          type: integer
+        items_per_page:
+          type: integer
+
+tags:
+  - name: LLMs
+    description: Operations related to PIA LLM management

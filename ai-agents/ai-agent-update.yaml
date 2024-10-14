@@ -1,0 +1,158 @@
+openapi: 3.0.0
+info:
+  title: Pia AI API
+  version: 1.0.0
+  description: API for updating AI agent details
+
+servers:
+  - url: https://api.piaai.com
+
+paths:
+  /ai_agents/{agent_id}:
+    put:
+      summary: Update AI Agent
+      description: Update details of a specific AI agent
+      tags:
+        - AI Agents
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: agent_id
+          in: path
+          required: true
+          schema:
+            type: string
+          description: Unique identifier of the AI agent to update
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateAIAgentRequest'
+      responses:
+        '200':
+          description: AI agent successfully updated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AIAgent'
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+        '404':
+          description: AI agent not found
+          content:
+            application/json:
+              schema:
+                $ref: '../common-openapi.yaml#/components/schemas/ErrorResponse'
+
+
+components:
+  securitySchemes:
+    BearerAuth:
+      $ref: '../common-openapi.yaml#/components/securitySchemes/BearerAuth'
+
+  schemas:
+    UpdateAIAgentRequest:
+      type: object
+      properties:
+        llm_id:
+          type: string
+          description: A unique identifier for the Language Model (LLM) to be used by this AI agent.
+        agent_name:
+          type: string
+          nullable: true
+          description: A custom name for your AI agent.
+        tts:
+          $ref: 'ai-agent-common-openapi.yaml#/components/schemas/TTSConfig'
+        stt:
+          $ref: 'ai-agent-common-openapi.yaml#/components/schemas/STTConfig'
+        responsiveness:
+          type: number
+          minimum: 0
+          maximum: 1
+          description: Determines how quickly the agent responds to user input.
+        interruption_sensitivity:
+          type: number
+          minimum: 0
+          maximum: 1
+          description: Sets how easily the agent can be interrupted.
+        use_backchanneling:
+          type: boolean
+          description: Enables or disables the agent's use of backchannel responses.
+        backchanneling_probability:
+          type: number
+          minimum: 0
+          maximum: 1
+          description: When backchanneling is enabled, this controls the frequency of these responses.
+        backchannel_words:
+          type: array
+          items:
+            type: string
+          description: A custom list of words or short phrases the agent can use as backchannel responses.
+        number_of_times_to_check_human_is_listening:
+          type: integer
+          minimum: 3
+          description: The number of times the agent will attempt to re-engage an unresponsive user before ending the call.
+        check_human_is_listening_phrases:
+          type: array
+          items:
+            type: string
+          description: Custom phrases the agent can use to check if the human is still engaged in the conversation.
+        idle_time_threshold_ms:
+          type: integer
+          minimum: 0
+          maximum: 10000
+          description: The duration (in milliseconds) the agent waits for a human response before considering the conversation idle.
+        ambient_sound:
+          type: string
+          enum: [coffee-shop, convention-hall, summer-outdoor, mountain-outdoor, static-noise, call-center]
+          nullable: true
+          description: Optional background noise to add to the call for a more immersive experience.
+        ambient_sound_volume:
+          type: number
+          minimum: 0
+          maximum: 2
+          description: Controls the volume of the selected ambient sound.
+        webhook_url:
+          type: string
+          nullable: true
+          description: An optional URL where the agent will send real-time updates about call events and status changes.
+        boosted_keywords:
+          type: array
+          items:
+            type: string
+          nullable: true
+          description: A list of important words or phrases that the speech recognition should prioritize.
+        pronunciation_dictionary:
+          $ref: 'ai-agent-common-openapi.yaml#/components/schemas/AIAgent/properties/pronunciation_dictionary'
+        end_call_after_silence_ms:
+          type: integer
+          minimum: 10000
+          maximum: 3600000
+          description: Duration of silence before ending call, in milliseconds.
+        max_call_duration_ms:
+          type: integer
+          minimum: 60000
+          maximum: 7200000
+          description: Maximum allowed call duration in milliseconds.
+        initial_message:
+          type: string
+          description: Message to be played when the call starts.
+        voicemail_detection_timeout_ms:
+          type: integer
+          minimum: 5000
+          maximum: 180000
+          description: Timeout for voicemail detection in milliseconds.
+        post_call_analysis_data:
+          $ref: 'ai-agent-common-openapi.yaml#/components/schemas/AIAgent/properties/post_call_analysis_data'
+
+    AIAgent:
+      $ref: 'ai-agent-common-openapi.yaml#/components/schemas/AIAgent'
+
+  responses:
+    UnauthorizedError:
+      $ref: '../common-openapi.yaml#/components/responses/UnauthorizedError'
+
+tags:
+  - name: AI Agents
+    description: Operations related to AI agent management

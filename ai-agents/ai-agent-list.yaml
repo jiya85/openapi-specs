@@ -1,0 +1,66 @@
+openapi: 3.0.0
+info:
+  title: Pia AI API
+  version: 1.0.0
+  description: API for listing AI agents
+
+servers:
+  - url: https://api.piaai.com
+
+paths:
+  /ai_agents:
+    get:
+      summary: List AI Agents
+      description: Retrieve a list of AI agents
+      tags:
+        - AI Agents
+      security:
+        - BearerAuth: []
+      parameters:
+        - in: query
+          name: page_size
+          schema:
+            type: integer
+            minimum: 1
+            maximum: 100
+            default: 20
+          description: Number of results to return per page
+        - in: query
+          name: page_token
+          schema:
+            type: string
+          description: Token for retrieving the next page of results
+      responses:
+        '200':
+          description: Successfully retrieved list of AI agents
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/AIAgent'
+                  next_page_token:
+                    type: string
+                    description: Token for retrieving the next page of results
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+
+components:
+  securitySchemes:
+    BearerAuth:
+      $ref: '../common-openapi.yaml#/components/securitySchemes/BearerAuth'
+
+  schemas:
+    AIAgent:
+      $ref: 'ai-agent-common-openapi.yaml#/components/schemas/AIAgent'
+
+  responses:
+    UnauthorizedError:
+      $ref: '../common-shared-openapi.yaml#/components/responses/UnauthorizedError'
+
+tags:
+  - name: AI Agents
+    description: Operations related to AI agent management

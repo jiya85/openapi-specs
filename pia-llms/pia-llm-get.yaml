@@ -1,0 +1,54 @@
+openapi: 3.0.0
+info:
+  title: Pia AI API - LLM Management
+  version: 1.0.0
+  description: API for retrieving PIA LLMs
+
+servers:
+  - url: https://api.piaai.com
+
+paths:
+  /llms/{llm_id}:
+    get:
+      summary: Get LLM
+      description: Retrieve a specific PIA LLM by its ID
+      tags:
+        - LLMs
+      security:
+        - BearerAuth: []
+      parameters:
+        - in: path
+          name: llm_id
+          required: true
+          schema:
+            type: string
+            format: uuid
+          description: The unique identifier of the LLM
+      responses:
+        '200':
+          description: Successfully retrieved LLM
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PiaLLM'
+        '404':
+          description: LLM not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+components:
+  securitySchemes:
+    BearerAuth:
+      $ref: '../common-openapi.yaml#/components/securitySchemes/BearerAuth'
+
+  schemas:
+    PiaLLM:
+      $ref: './pia-llm-common-openapi.yaml#/components/schemas/PiaLLM'
+    ErrorResponse:
+      $ref: '../common-openapi.yaml#/components/schemas/ErrorResponse'
+
+tags:
+  - name: LLMs
+    description: Operations related to PIA LLM management

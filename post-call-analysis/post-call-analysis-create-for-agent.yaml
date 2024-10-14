@@ -1,0 +1,64 @@
+openapi: 3.0.0
+info:
+  title: Pia AI API - Create Call Analysis
+  version: 2.0.0
+  description: API for creating call analysis items
+
+paths:
+  /ai_agents/{agent_id}/analysis:
+    post:
+      summary: Create Call Analysis
+      description: Create new analysis items for a specific AI agent.
+      tags:
+        - Call Analysis
+      security:
+        - BearerAuth: []
+      parameters:
+        - in: path
+          name: agent_id
+          required: true
+          schema:
+            type: string
+          description: ID of the AI agent to create analysis items for.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: array
+              items:
+                $ref: './post-call-analysis-common-openapi.yaml#/components/schemas/PostCallAnalysisItem'
+      responses:
+        '201':
+          description: Successfully created call analysis items
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    description: A success message confirming the creation of analysis items
+        '400':
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                $ref: '../../common-openapi.yaml#/components/schemas/ErrorResponse'
+        '401':
+          $ref: '../../common-openapi.yaml#/components/responses/UnauthorizedError'
+        '404':
+          description: AI agent not found
+          content:
+            application/json:
+              schema:
+                $ref: '../../common-openapi.yaml#/components/schemas/ErrorResponse'
+
+components:
+  securitySchemes:
+    BearerAuth:
+      $ref: '../../common-openapi.yaml#/components/securitySchemes/BearerAuth'
+
+tags:
+  - name: Call Analysis
+    description: Operations related to call analysis
